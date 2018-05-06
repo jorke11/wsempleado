@@ -17,7 +17,12 @@ class Conexion {
     public function Conectar() {
 //        $con = pg_connect("host=localhost port=5432 dbname=empleado user=postgres password=123");
         $con = pg_connect("host=empleado.cddjetfe34nc.us-east-2.rds.amazonaws.com port=5432 dbname=empleado user=empleado password=empleado2018");
-        return $con;
+        if (!$conn) {
+            echo "Error, Problemas al conectar con el servidor";
+            exit;
+        } else {
+            return $con;
+        }
     }
 
     public function insertar($tabla, $datos, $debug = NULL) {
@@ -32,9 +37,9 @@ class Conexion {
         }
 
         $sql = "INSERT INTO $tabla($indice) VALUES($valor) RETURNING id;";
-        
+
         return $sql;
-        
+
         $res = pg_query($sql);
         $insert_row = pg_fetch_row($res);
         $insert_id = $insert_row[0];
