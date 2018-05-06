@@ -44,8 +44,6 @@ class Conexion {
 
         $sql = "INSERT INTO $tabla($indice) VALUES($valor) RETURNING id;";
 
-        return $sql;
-
         $res = pg_query($sql);
         $insert_row = pg_fetch_row($res);
         $insert_id = $insert_row[0];
