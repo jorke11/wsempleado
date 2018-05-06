@@ -41,8 +41,7 @@ $entradaE["role_id"] = "xsd:int";
 $respuesta = array('respuesta' => 'xsd:string');
 
 
-$server->register('getEmpleado', $entrada, $respuesta, $url);
-$server->register('setEmpleado', $entradaE, $respuesta, $url);
+
 
 $server->register('getRol', $entradaint, $respuesta, $url);
 $server->register('setRol', $entrada3, $respuesta, $url);
@@ -53,6 +52,8 @@ $server->register('getEstadoLaboral', $entradaint, $respuesta, $url);
 $server->register('setEstadoLaboral', $entrada3, $respuesta, $url);
 $server->register('getContratos', $entradaint, $respuesta, $url);
 $server->register('setContratos', $entrada3, $respuesta, $url);
+$server->register('getEmpleado', $entrada, $respuesta, $url);
+$server->register('setEmpleado', $entradaE, $respuesta, $url);
 
 function setContratos($id) {
     
@@ -206,7 +207,7 @@ function getCargo($id) {
     return new soapval('return', 'xsd:string', json_encode($response));
 }
 
-function setRol($id) {
+function setRol($description) {
     require_once"class/Conexion.php";
     $obj = new Conexion();
 
