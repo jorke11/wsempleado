@@ -16,13 +16,17 @@ class Conexion {
 
     public function Conectar() {
 //        $con = pg_connect("host=localhost port=5432 dbname=empleado user=postgres password=123");
-        $con = pg_connect("host=empleado.cddjetfe34nc.us-east-2.rds.amazonaws.com port=5432 dbname=empleado user=empleado password=empleado2018");
-        if (!$conn) {
+
+        $con = pg_connect("host=empleado.cddjetfe34nc.us-east-2.rds.amazonaws.com port=5432 dbname=empleado user=empleado password=empleado2018") or die("No se ha podido conectar"); 
+
+        $stat = pg_connection_status($con);
+        if ($stat === PGSQL_CONNECTION_OK) {
+            return $con;
+        } else {
             echo "Error, Problemas al conectar con el servidor";
             exit;
-        } else {
-            return $con;
         }
+        
     }
 
     public function insertar($tabla, $datos, $debug = NULL) {
