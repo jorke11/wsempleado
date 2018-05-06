@@ -18,7 +18,7 @@ class Conexion {
 //        $con = pg_connect("host=localhost port=5432 dbname=empleado user=postgres password=123");
 
         $con = pg_connect("host=empleado.cddjetfe34nc.us-east-2.rds.amazonaws.com port=5432 dbname=empleado user=empleado password=empleado2018") 
-                or die("No se ha podido conectar ". pg_last_error()); 
+                or die("No se ha podido conectar ". pg_last_error()." error"); 
 
         $stat = pg_connection_status($con);
         if ($stat === PGSQL_CONNECTION_OK) {
