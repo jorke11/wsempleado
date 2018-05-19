@@ -30,6 +30,8 @@ $entradaE["usuario"] = "xsd:string";
 $entradaE["clave"] = "xsd:string";
 $entradaE["estado_laboral_id"] = "xsd:int";
 $entradaE["role_id"] = "xsd:int";
+$entradaL["usuario"] = "xsd:string";
+$entradaL["clave"] = "xsd:string";
 
 
 //$server->wsdl->addComplexType(
@@ -41,7 +43,7 @@ $entradaE["role_id"] = "xsd:int";
 $respuesta = array('respuesta' => 'xsd:string');
 
 
-
+$server->register('login', $entradaL, $respuesta, $url);
 
 $server->register('getRol', $entradaint, $respuesta, $url);
 $server->register('setRol', $entrada3, $respuesta, $url);
@@ -54,6 +56,24 @@ $server->register('getContratos', $entradaint, $respuesta, $url);
 $server->register('setContratos', $entrada3, $respuesta, $url);
 $server->register('getEmpleado', $entrada, $respuesta, $url);
 $server->register('setEmpleado', $entradaE, $respuesta, $url);
+
+function login($usuario, $clave) {
+    require_once"class/Conexion.php";
+    $obj = new Conexion();
+
+    $sql = "select * from empleados where usuario='" . $usuario . "' and clave='" . $clave . "'";
+    
+
+    $response["data"] = $obj->query($sql);
+
+    if (count($response["data"]) > 0) {
+        $response["status"] = true;
+    } else {
+        $response["status"] = false;
+        $response["msg"] = "Usuario no encontrado";
+    }
+    return new soapval('return', 'xsd:string', json_encode($response));
+}
 
 function setContratos($id) {
     
