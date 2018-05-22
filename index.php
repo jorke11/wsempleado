@@ -61,16 +61,14 @@ function login($usuario, $clave) {
     require_once"class/Conexion.php";
     $obj = new Conexion();
 
-    $sql = "select * from empleados where usuario='" . $usuario . "' and clave='" . $clave . "'";
-    
+    $sql = "select id,nombres,apellidos from empleados where usuario='" . $usuario . "' and clave='" . $clave . "'";
 
-    $response["data"] = $obj->query($sql);
+    $response = $obj->query($sql);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
+    if (count($response) == 0) {
+        $response = "Usuario no encontrado";
     } else {
-        $response["status"] = false;
-        $response["msg"] = "Usuario no encontrado";
+        $response = $response[0];
     }
     return new soapval('return', 'xsd:string', json_encode($response));
 }
@@ -192,14 +190,18 @@ function setCargo($description) {
 
 
     $param["descripcion"] = $description;
-    $response["data"] = $obj->insertar("cargos", $param);
+    $cargo_id = $obj->insertar("cargos", $param);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-        $response["msg"] = "cargos agregado";
+    $sql = "select id,descripcion from cargos where id=" . $cargo_id;
+
+
+
+    $response = $obj->query($sql);
+
+    if (count($response) > 0) {
+        $response = $response[0];
     } else {
-        $response["status"] = false;
-        $response["msg"] = "cargos no se pudo agregar";
+        $response = "Cargo no se pudo agregar";
     }
 
     return new soapval('return', 'xsd:string', json_encode($response));
@@ -215,13 +217,10 @@ function getCargo($id) {
         $sql .= " where id=" . $id;
     }
 
-    $response["data"] = $obj->query($sql);
+    $response = $obj->query($sql);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-    } else {
-        $response["status"] = false;
-        $response["msg"] = "Cargo no encontrado";
+    if (count($response) == 0) {
+        $response = "Cargo no encontrado";
     }
 
     return new soapval('return', 'xsd:string', json_encode($response));
@@ -285,16 +284,34 @@ function setEmpleado($nombres, $apellidos, $cedula, $telefono, $direccion, $carg
     $param["dependencia_id"] = $dependency_id;
     $param["sueldo"] = $sueldo;
     $param["usuario"] = $usuario;
+    $param["clave"] = $clave;
     $param["estado_laboral_id"] = $estado_laboral_id;
     $param["role_id"] = $role_id;
-    $response["data"] = $obj->insertar("empleados", $param);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-        $response["msg"] = "roles agregado";
+    $sql = "select * from roles where id=" . $role_id;
+    $roles = $obj->query($sql);
+    $sql = "select * from cargos id=" . $cargo_id;
+    $roles = $obj->query($sql);
+    $sql = "select * from contratos id=" . $contrato_id;
+    $roles = $obj->query($sql);
+    $sql = "select * from hojavida id=" . $hojavida_id;
+    $roles = $obj->query($sql);
+    $sql = "select * from pedencias id=" . $dependency_id;
+    $roles = $obj->query($sql);
+    $sql = "select * from estadolaboral id=" . $estado_laboral_id;
+    $roles = $obj->query($sql);
+
+
+    $empleado_id = $obj->insertar("empleados", $param);
+
+    $sql = "select id,nombres,apellidos,cedula,telefono,direccion,cargo_id,contrato_id,usuario,clave from empleados where id=" . $empleado_id;
+
+    $response = $obj->query($sql);
+
+    if (count($response) > 0) {
+        $response = $response[0];
     } else {
-        $response["status"] = false;
-        $response["msg"] = "roles no se pudo agregar";
+        $response = "Empleado no se pudo agregar";
     }
 
     return new soapval('return', 'xsd:string', json_encode($response));
@@ -303,21 +320,30 @@ function setEmpleado($nombres, $apellidos, $cedula, $telefono, $direccion, $carg
 function getEmpleado($cedula) {
     require_once"class/Conexion.php";
     $obj = new Conexion();
+    $where = '';
+    if ($cedula != "0") {
+        $where = "WHERE e.cedula='" . $cedula . "'";
+    }
 
     $sql = "
-        select e.id,e.nombres,e.apellidos,e.cedula,e.telefono,e.direccion,c.descripcion as cargo,r.descripcion as rol
+        select e.id,e.nombres,e.apellidos,e.cedula,e.telefono,e.direccion,c.descripcion as cargo,r.descripcion as rol,e.usuario,e.clave
         from empleados e
         JOIN cargos c ON c.id=e.cargo_id
         JOIN roles r ON r.id=e.role_id
-        WHERE e.cedula='" . $cedula . "'";
+        $where
+        ";
 
-    $response["data"] = $obj->query($sql);
+//      return new soapval('return', 'xsd:string', json_encode($sql));
+    $response = $obj->query($sql);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
+    if (count($response) == 0) {
+        $response = "usuario no encontrado";
     } else {
-        $response["status"] = false;
-        $response["msg"] = "usuario no encontrado";
+        if ($cedula == 0) {
+            $response = $response;
+        } else {
+            $response = $response[0];
+        }
     }
 
 
