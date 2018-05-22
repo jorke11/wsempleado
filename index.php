@@ -50,6 +50,8 @@ $server->register('setRol', $entrada3, $respuesta, $url);
 
 $server->register('getCargo', $entradaint, $respuesta, $url);
 $server->register('setCargo', $entrada3, $respuesta, $url);
+$server->register('setDependencia', $entrada3, $respuesta, $url);
+$server->register('getDependencia', $entradaint, $respuesta, $url);
 $server->register('getEstadoLaboral', $entradaint, $respuesta, $url);
 $server->register('setEstadoLaboral', $entrada3, $respuesta, $url);
 $server->register('getContratos', $entradaint, $respuesta, $url);
@@ -128,15 +130,13 @@ function getEstadoLaboral($id) {
         $sql .= " where id=" . $id;
     }
 
+    $response = $obj->query($sql);
 
-    $response["data"] = $obj->query($sql);
-
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-    } else {
-        $response["status"] = false;
-        $response["msg"] = "Estado laboral no encontrado";
+    if (count($response) == 0) {
+        $response = "Depedencia no encontrada";
     }
+
+
 
     return new soapval('return', 'xsd:string', json_encode($response));
 }
@@ -147,14 +147,17 @@ function setDependencia($description) {
 
 
     $param["descripcion"] = $description;
-    $response["data"] = $obj->insertar("dependencias", $param);
+    $dependencia_id = $obj->insertar("dependencias", $param);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-        $response["msg"] = "dependencias agregado";
+
+    $sql = "select id,descripcion from dependencias where id=" . $dependencia_id;
+
+    $response = $obj->query($sql);
+
+    if (count($response) > 0) {
+        $response = $response[0];
     } else {
-        $response["status"] = false;
-        $response["msg"] = "dependencias no se pudo agregar";
+        $response = "Dependencia no se pudo agregar";
     }
 
     return new soapval('return', 'xsd:string', json_encode($response));
@@ -171,14 +174,10 @@ function getDependencia($id) {
         $sql .= " where id=" . $id;
     }
 
+    $response = $obj->query($sql);
 
-    $response["data"] = $obj->query($sql);
-
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-    } else {
-        $response["status"] = false;
-        $response["msg"] = "Dependencia no encontrada";
+    if (count($response) == 0) {
+        $response = "Depedencia no encontrada";
     }
 
     return new soapval('return', 'xsd:string', json_encode($response));
@@ -256,15 +255,11 @@ function getRol($id) {
     }
 
 
-    $response["data"] = $obj->query($sql);
+    $response = $obj->query($sql);
 
-    if (count($response["data"]) > 0) {
-        $response["status"] = true;
-    } else {
-        $response["status"] = false;
-        $response["msg"] = "Rol no encontrado";
+    if (count($response) == 0) {
+        $response = "Rol no encontrada";
     }
-
 
     return new soapval('return', 'xsd:string', json_encode($response));
 }
